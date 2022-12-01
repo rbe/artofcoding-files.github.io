@@ -1,0 +1,292 @@
+Filesystem layout:
+s0 / 16 GB
+s1 swap 2 GB
+s3 /globaldevices 512 MB
+s7 32 MB
+
+
+rbemac2:VirtualBox rbe$ VBoxManage clonehd sol1/sol1.vdi sol2/sol2.vdi
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Clone hard disk created in format 'VDI'. UUID: a795593b-e5e4-4722-a836-18a1547edc2f
+rbemac2:VirtualBox rbe$ VBoxManage clonehd sol1/sol1-scsi1.vdi sol2/sol2-scsi1.vdi
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Clone hard disk created in format 'VDI'. UUID: 9825956c-d04b-435f-a0a6-db13837cf465
+rbemac2:VirtualBox rbe$ VBoxManage clonehd sol1/sol1-scsi2.vdi sol2/sol2-scsi2.vdi
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Clone hard disk created in format 'VDI'. UUID: b24072ff-5e4c-4ad6-83f2-ce78d6e8b9bd
+
+
+    #!bash
+    cat > /etc/nodename
+    cat > /etc/hostname.e1000g0
+    touch /etc/notrouter
+    cat > /etc/defaultrouter
+    cp /etc/nsswitch.dns /etc/nsswitch.conf
+
+    vi /etc/resolv.conf
+
+    domain bensmann.com
+    search bensmann.com
+    nameserver 217.0.43.17
+    nameserver 217.0.43.49
+    nameserver 192.168.3.1
+
+
+
+    #!bash
+    iscsiadm modify discovery -t enable
+    iscsiadm add discovery-address 192.168.3.66
+    svcadm enable initiator
+
+
+
+    #!bash
+    pkgadd -d VBoxSolaris*pkg
+
+
+
+    #!bash
+    svcadm enable rlogin
+    vi /etc/default/login
+    # If CONSOLE is set, root can only login on that device.
+    # Comment this line out to allow remote login by root.
+    #
+    ##CONSOLE=/dev/console
+
+
+
+    #!bash
+    bash-3.00# svcadm refresh rlogin
+    bash-3.00# rsh localhost
+    Last login: Mon Jan 10 18:32:55 on console
+    Oracle Corporation      SunOS 5.10      Generic Patch   January 2005
+
+
+
+    #!bash
+    root@solc1:/ # svccfg -s rpc/bind setprop config/local_only=false
+    root@solc1:/ # svccfg -s rpc/bind listprop config/local_only
+    config/local_only  boolean  false
+    # svcadm refresh rpc/bind
+
+
+
+    #!bash
+    Last login: Sat Jan  8 12:36:06 on ttys000
+    rbemac2:~ rbe$ ssh root@192.168.3.80
+    The authenticity of host '192.168.3.80 (192.168.3.80)' can't be established.
+    RSA key fingerprint is ac:a7:66:ab:1f:17:c8:02:d3:af:bc:a3:7b:43:09:18.
+    Are you sure you want to continue connecting (yes/no)? yes
+    Warning: Permanently added '192.168.3.80' (RSA) to the list of known hosts.
+    Password: 
+    Last login: Sat Jan  8 12:37:12 2011
+    Oracle Corporation      SunOS 5.10      Generic Patch   January 2005
+    
+    
+    
+    # bash --login
+    bash-3.00# export PS1='\u@\h:\w # '
+    
+    
+    
+    root@solc1:/ # cd Downloads/cluster33/Solaris_x86/
+    root@solc1:/Downloads/cluster33/Solaris_x86 # ls -l
+    total 26
+    -rwxr-xr-x   1 root     root       10631 Aug  4 23:39 installer
+    drwxr-xr-x   8 root     root         512 Aug  4 23:39 Product
+    -rw-r--r--   1 root     root          86 Aug  4 23:39 release_info
+    
+    root@solc1:/Downloads/cluster33/Solaris_x86 # ./installer 
+    Unable to access a usable display on the remote system. Continue in command-line mode?(Y/N)
+    Y 
+    
+    
+    Welcome to Oracle(R) Solaris Cluster; serious software made simple...
+    
+    Before you begin, refer to the Release Notes and Installation Guide for the
+    products that you are installing. This documentation is available at http:
+    //docs.sun.com.
+    
+    You can install any or all of the Services provided by Oracle Solaris
+    Cluster.
+    
+    
+    Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
+    
+    <Press ENTER to Continue>
+    
+    
+    Before you install this product, you must read and accept the entire
+    Software License Agreement under which this product is licensed for your use
+    .
+    
+    <Press ENTER to display the Software License Agreement>
+    
+    You acknowledge that your use of this software is subject to (i) the license
+    terms that you accepted when you obtained a right to use this software; or (ii)
+    the license terms that you signed when you placed your software order with us;
+    or, if neither (i) or (ii) are applicable, then, (iii) the Oracle Electronic
+    Delivery Trial  License Agreement (which you acknowledge that you have read and
+    understand), available at edelivery.oracle.com <http://edelivery.oracle.com>.
+    Note: Software downloaded for trial use or downloaded as replacement media may
+    not be used to update any unsupported software.
+    
+       If you have read and accept all the terms of the entire Software License
+       Agreement, answer 'Yes', and the installation will continue.
+       If you do not accept all the terms of the Software License Agreement, answer
+       'No', and the installation program will end without installing the product.
+       Have you read, and do you accept, all of the terms of the preceding Software
+       License Agreement [No] {"<" goes back, "!" exits}? Yes
+    
+    
+    
+    Installation Type
+    -----------------
+    
+       Do you want to install the full set of Oracle Solaris Cluster Products and
+       Services? (Yes/No) [Yes] {"<" goes back, "!" exits} 
+    
+       Install multilingual package(s) for all selected components [Yes] {"<" goes
+       back, "!" exits}: 
+    
+    
+    Checking System Status
+    
+        Available disk space...        : Checking .... OK
+    
+        Memory installed...            : Checking .... OK
+    
+        Swap space installed...        : Checking .... OK
+    
+        Operating system patches...    : Checking .... OK
+    
+        Operating system resources...  : Checking .... OK
+    
+    
+    System ready for installation                   
+    
+    
+    
+       Enter 1 to continue [1] {"<" goes back, "!" exits} 1
+    
+    
+    Screen for selecting Type of Configuration
+    
+    1. Configure Now - Selectively override defaults or express through
+    
+    2. Configure Later - Manually configure following installation
+    
+    
+       Select Type of Configuration [1] {"<" goes back, "!" exits} 2
+    Ready to Install
+    ----------------
+    The following components will be installed.
+    
+    Product: Oracle Solaris Cluster
+    Uninstall Location: /var/sadm/prod/SUNWentsyssc33
+    Space Required: 213.82 MB
+    -------------------------------------------------
+            Java DB
+               Java DB Server
+               Java DB Client
+            Oracle Solaris Cluster 3.3
+               Oracle Solaris Cluster Core
+               Oracle Solaris Cluster Manager
+            Oracle Solaris Cluster Agents 3.3
+               Oracle Solaris Cluster HA for Java(TM) System Application Server
+               Oracle Solaris Cluster HA for Java(TM) System Message Queue
+               Oracle Solaris Cluster HA for Sybase ASE
+               Oracle Solaris Cluster HA for Java(TM) System Messaging Server
+               Oracle Solaris Cluster HA for Java(TM) System Calendar Server
+               Oracle Solaris Cluster HA for Java(TM) System Directory Server
+               Oracle Solaris Cluster HA for Java(TM) System Application Server EE (HADB)
+               Oracle Solaris Cluster HA for Instant Messaging
+               Oracle Solaris Cluster HA/Scalable for Java(TM) System Web Server
+               Oracle Solaris Cluster HA for Apache Tomcat
+               Oracle Solaris Cluster HA for DHCP
+               Oracle Solaris Cluster HA for DNS
+               Oracle Solaris Cluster HA for MySQL
+               Oracle Solaris Cluster HA for Sun N1 Service Provisioning System
+               Oracle Solaris Cluster HA for NFS
+               Oracle Solaris Cluster HA for Oracle
+               Oracle Solaris Cluster HA for Samba
+               Oracle Solaris Cluster HA for Sun N1 Grid Engine
+               Oracle Solaris Cluster HA for Solaris Containers
+               Oracle Solaris Cluster Support for Oracle RAC
+               Oracle Solaris Cluster HA for Apache 
+               Oracle Solaris Cluster HA for SAP liveCache
+               Oracle Solaris Cluster HA for WebSphere Message Broker
+               Oracle Solaris Cluster HA for WebSphere MQ
+               Oracle Solaris Cluster HA for Oracle 9iAS
+               Oracle Solaris Cluster HA for SAPDB
+               Oracle Solaris Cluster HA for SAP Web Application Server
+               Oracle Solaris Cluster HA for SAP
+               Oracle Solaris Cluster HA for Kerberos
+               Oracle Solaris Cluster HA for BEA WebLogic Server
+               Oracle Solaris Cluster HA for PostgreSQL
+               Oracle Solaris Cluster HA for Informix
+               Oracle Solaris Cluster HA for TimesTen
+            Oracle Solaris Cluster Geographic Edition 3.3
+               Oracle Solaris Cluster Geographic Edition Core Components
+               Oracle Solaris Cluster Geographic Edition Manager
+               Sun StorEdge Availability Suite Data Replication Support
+               Hitachi Truecopy Data Replication Support
+               SRDF Data Replication Support
+               Oracle Data Guard Data Replication Support
+               Oracle Solaris Cluster Geographic Edition Script-Based Plugin Replication
+    Support
+            Quorum Server
+            Java(TM) System High Availability Session Store 4.4.3
+    
+    
+    1. Install
+    2. Start Over
+    3. Exit Installation
+    
+    What would you like to do [1] {"<" goes back, "!" exits}? 1
+    
+    Oracle Solaris Cluster
+    |-1%--------------25%-----------------50%-----------------75%--------------100%|
+    
+    
+    Installation Complete
+    
+    
+    Software installation has completed successfully. You can view the installation
+    summary and log by using the choices below. Summary and log files are available
+    in /var/sadm/install/logs/.
+    
+    
+    
+    Your next step is to perform the postinstallation configuration and
+    verification tasks documented in the Postinstallation Configuration and Startup
+    Chapter of the Java(TM) Enterprise System Installation Guide. See: http://docs.
+    sun.com/doc/820-2827.
+    
+       Enter 1 to view installation summary and Enter 2 to view installation logs
+       [1] {"!" exits} 1
+    
+    
+    Installation Summary Report
+    Install Summary
+    Oracle Solaris Cluster : Installed
+    Java DB : Installed, Configure After Install
+    Oracle Solaris Cluster 3.3 : Installed, Configure After Install
+    Oracle Solaris Cluster Agents 3.3 : Installed, Configure After Install
+    Oracle Solaris Cluster Geographic Edition 3.3 : Installed, Configure After
+    Install
+    Quorum Server : Installed, Configure After Install
+    Java(TM) System High Availability Session Store 4.4.3 : Installed
+    Configuration Data
+    The configuration log is saved in :  /var/sadm/install/logs/JavaES_Install_log.
+    538478190
+       Enter 1 to view installation summary and Enter 2 to view installation logs
+       [1] {"!" exits} !
+    
+    
+    In order to notify you of potential updates, we need to confirm an internet connection. Do you want to proceed [Y/N] : Y
+    Downloading reporter application ...
+    |-----10%----20%----30%----40%----50%----60%----70%----80%----90%----100%|
+    System not modified: Java ES shared components Monitoring Framework and Cacao are required for Java ES Reporter feature: please install them first.
+
+
